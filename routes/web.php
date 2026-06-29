@@ -86,6 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('permissions', PermissionController::class);
     Route::resource('users', UserController::class);
 
+
 });
 
 require __DIR__.'/auth.php';

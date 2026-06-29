@@ -13,7 +13,8 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6"
+     enctype="multipart/form-data">
         @csrf
         @method('patch')
 
@@ -21,6 +22,128 @@
             <x-input-label for="name" :value="__('Name')" />
             <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        </div>
+        <div>
+
+            <x-input-label
+                for="avatar"
+                :value="__('Profile Photo')" />
+
+            @if($user->avatar)
+
+                <img
+                    src="{{ asset('storage/'.$user->avatar) }}"
+                    class="w-24 h-24 rounded-full object-cover border mb-4">
+
+            @endif
+
+            <input
+                type="file"
+                name="avatar"
+                id="avatar"
+                class="block w-full rounded-lg border-gray-300">
+
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('avatar')" />
+
+        </div>
+        <div>
+
+            <x-input-label
+                for="phone"
+                :value="__('Phone')" />
+
+            <x-text-input
+
+                id="phone"
+
+                name="phone"
+
+                type="text"
+
+                class="mt-1 block w-full"
+
+                :value="old('phone',$user->phone)"
+
+            />
+
+            <x-input-error
+                class="mt-2"
+                :messages="$errors->get('phone')" />
+
+        </div>
+        <div>
+
+            <x-input-label
+                :value="__('Company')" />
+
+            <input
+
+                type="text"
+
+                readonly
+
+                value="{{ optional($user->tenant)->company_name ?? 'N/A' }}"
+
+                class="mt-1 block w-full rounded-lg bg-gray-100 border-gray-300">
+
+        </div>
+        <div>
+
+    <x-input-label
+        :value="__('Role')" />
+
+            <input
+
+                type="text"
+
+                readonly
+
+                value="{{ $user->roles->first()?->name ?? 'No Role' }}"
+
+                class="mt-1 block w-full rounded-lg bg-gray-100 border-gray-300">
+
+        </div>
+        <div>
+
+            <x-input-label
+                :value="__('Joined')" />
+
+            <input
+
+                type="text"
+
+                readonly
+
+                value="{{ $user->created_at->format('d M Y') }}"
+
+                class="mt-1 block w-full rounded-lg bg-gray-100 border-gray-300">
+
+        </div>
+        <div>
+
+    <x-input-label
+        :value="__('Status')" />
+
+            @if($user->status)
+
+                <span class="inline-block px-3 py-2 rounded-full bg-green-100 text-green-700">
+
+                    Active
+
+                </span>
+
+            @else
+
+                <span class="inline-block px-3 py-2 rounded-full bg-red-100 text-red-700">
+
+                    Inactive
+
+                </span>
+
+            @endif
+
         </div>
 
         <div>
