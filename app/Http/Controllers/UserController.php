@@ -15,7 +15,7 @@ class UserController extends Controller
 
         $query = User::where('tenant_id', $tenantId);
 
-        // Search
+        //
         if ($request->filled('search')) {
 
             $search = $request->search;
