@@ -15,11 +15,13 @@
         "codeat3/blade-carbon-icons": "^2.39",
         "codeat3/blade-grommet-icons": "^1.11",
         "codeat3/blade-mono-icons": "^1.6",
+        "jenssegers/agent": "^2.6",
         "laravel/framework": "^13.8",
         "laravel/tinker": "^3.0",
         "maatwebsite/excel": "^3.1",
         "mallardduck/blade-boxicons": "^2.5",
-        "spatie/laravel-permission": "^8.0"
+        "spatie/laravel-permission": "^8.0",
+        "stevebauman/location": "^7.6"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

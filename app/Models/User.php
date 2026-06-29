@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
 use App\Models\Tenant;
+use App\Models\LoginActivity;
 
 #[Fillable([ 'tenant_id','name', 'email', 'password','phone','avatar','status','last_login_at',])]
 #[Hidden(['password', 'remember_token'])]
@@ -48,5 +49,9 @@ class User extends Authenticatable
             Task::class,
             'assigned_to'
         );
+    }
+    public function loginActivities()
+    {
+        return $this->hasMany(LoginActivity::class);
     }
 }

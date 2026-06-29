@@ -20,6 +20,7 @@ use App\Http\Controllers\CompanySettingController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\LoginActivityController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -61,7 +62,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/leads/{lead}', [LeadController::class, 'show'])
     ->name('leads.show');
     Route::put('/follow-ups/{followUp}/complete',[FollowUpController::class, 'complete'])->name('follow-ups.complete');
-    Route::delete('/follow-ups/{followUp}',[FollowUpController::class,'destroy'])->name('follow-ups.destroy');
+    //Route::delete('/follow-ups/{followUp}',[FollowUpController::class,'destroy'])->name('follow-ups.destroy');
     Route::get('/calendar',[CalendarController::class,'index'])
         ->name('calendar.index');
 
@@ -85,6 +86,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('roles', RoleController::class);
     Route::resource('permissions', PermissionController::class);
     Route::resource('users', UserController::class);
+    Route::get('/login-activities',[LoginActivityController::class,'index'])->name('login-activities.index');
+
 
 
 });
