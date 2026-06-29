@@ -1,0 +1,66 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+.drag-ghost{
+    opacity:.4;
+}
+
+.drag-chosen{
+    transform:rotate(2deg);
+}
+
+.drop-active{
+    background:#dbeafe;
+    border:2px dashed #2563eb;
+    transition:.2s;
+}
+.empty-column{
+
+    transition:.25s;
+
+}
+.drop-zone{
+
+    border:2px dashed #3b82f6;
+
+    background:#dbeafe;
+
+    transition:.25s;
+
+}
+
+.sortable-chosen{
+
+    transform:rotate(2deg);
+
+    box-shadow:0 18px 35px rgba(0,0,0,.25);
+
+}
+
+.sortable-ghost{
+
+    opacity:.5;
+
+}
+.flash-success{
+
+    animation:flashSuccess .8s ease;
+
+}
+
+@keyframes flashSuccess{
+
+    0%{
+        background:#dcfce7;
+        transform:scale(1.03);
+    }
+
+    100%{
+        background:#fff;
+        transform:scale(1);
+    }
+
+}
+body{
+    overflow-x: hidden;
+}
