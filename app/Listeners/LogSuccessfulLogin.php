@@ -29,6 +29,13 @@ class LogSuccessfulLogin
 
             $agent = new Agent();
             $location = Location::get(request()->ip());
+            $device = $agent->isDesktop()
+            ? 'Desktop'
+            : ($agent->isTablet()
+                ? 'Tablet'
+                : ($agent->isPhone()
+                    ? 'Mobile'
+                    : 'Unknown'));
 
             LoginActivity::create([
 
@@ -42,7 +49,8 @@ class LogSuccessfulLogin
 
                 'platform' => $agent->platform(),
 
-                'device' => $agent->device(),
+                //'device' => $agent->device(),
+                'device' => $device,
 
                  'country' => $location ? $location->countryName : null,
 
