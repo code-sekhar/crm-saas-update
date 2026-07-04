@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Lead;
 use Illuminate\Http\Request;
 use App\Models\Activity;
+use App\Services\AuditLogService;
 
 
 class LeadController extends Controller
@@ -57,6 +58,13 @@ class LeadController extends Controller
             'action'     => 'Lead Created',
             'description'=> 'New lead created: '.$lead->name,
         ]);
+        AuditLogService::log(
+            module: 'Lead',
+            action: 'Created',
+            recordId: $lead->id,
+            description: 'Created Lead '.$lead->name,
+            newValues: $lead->toArray()
+        );
 
         return redirect()
             ->route('leads.index')
@@ -107,6 +115,7 @@ class LeadController extends Controller
         $request->validate([
             'status' => 'required|in:New,Contacted,Qualified,Proposal,Negotiation,Won,Lost',
         ]);
+        $oldValues = $lead->toArray();
 
         $lead->update([
             'name' => $request->name,
@@ -124,6 +133,21 @@ class LeadController extends Controller
             'action'     => 'Lead Updated',
             'description'=> 'Lead information updated.',
         ]);
+        AuditLogService::log(
+
+            module: 'Lead',
+
+            action: 'Updated',
+
+            recordId: $lead->id,
+
+            description: 'Updated Lead: '.$lead->name,
+
+            oldValues: $oldValues,
+
+            newValues: $lead->fresh()->toArray()
+
+        );
 
         return redirect()->route('leads.index');
     }
@@ -137,6 +161,7 @@ class LeadController extends Controller
             $lead->tenant_id != auth()->user()->tenant_id,
             403
         );
+        $oldValues = $lead->toArray();
         Activity::create([
             'tenant_id'  => auth()->user()->tenant_id,
             'lead_id'    => $lead->id,
@@ -144,6 +169,19 @@ class LeadController extends Controller
             'action'     => 'Lead Deleted',
             'description'=> 'Lead deleted.',
         ]);
+        AuditLogService::log(
+
+            module: 'Lead',
+
+            action: 'Deleted',
+
+            recordId: $lead->id,
+
+            description: 'Deleted Lead: '.$lead->name,
+
+            oldValues: $oldValues
+
+        );
 
         $lead->delete();
 
