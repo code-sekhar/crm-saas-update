@@ -6,6 +6,7 @@ use App\Models\LeadNote;
 use Illuminate\Http\Request;
 use App\Models\Lead;
 use App\Models\Activity;
+use App\Services\AuditLogService;
 
 class LeadNoteController extends Controller
 {
@@ -55,6 +56,13 @@ class LeadNoteController extends Controller
                 'action'     => 'Note Added',
                 'description'=> 'Added a note.',
             ]);
+            AuditLogService::log(
+                module: 'Lead Note',
+                action: 'Created',
+                recordId: $lead->id,
+                description: 'Created Lead Note '.$lead->name,
+                newValues: $lead->toArray()
+            );
 
             return redirect()
                 ->back()
@@ -101,6 +109,13 @@ class LeadNoteController extends Controller
             'action'     => 'Note Updated',
             'description'=> 'Updated a note.',
         ]);
+        AuditLogService::log(
+                module: 'Lead Note',
+                action: 'Updated',
+                recordId: $leadNote->id,
+                description: 'Updated Lead Note '.$leadNote->lead->name,
+                newValues: $leadNote->toArray()
+            );
 
         return redirect()
             ->back()

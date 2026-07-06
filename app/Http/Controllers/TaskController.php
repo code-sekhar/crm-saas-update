@@ -6,6 +6,7 @@ use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Models\Lead;
 use App\Models\Activity;
+use App\Services\AuditLogService;
 
 class TaskController extends Controller
 {
@@ -68,6 +69,13 @@ class TaskController extends Controller
             'action'     => 'Task Created',
             'description'=> 'Created task: '.$task->title,
         ]);
+        AuditLogService::log(
+                module: 'Task',
+                action: 'Created',
+                recordId: $task->id,
+                description: 'Created Task '.$task->title,
+                newValues: $task->toArray()
+            );
 
         return redirect()
             ->route('tasks.index')
