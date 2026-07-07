@@ -89,6 +89,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/login-activities',[LoginActivityController::class,'index'])->name('login-activities.index');
     Route::get('/audit-logs',[AuditLogController::class, 'index'])->name('audit-logs.index');
+    Route::get('/audit-logs/{auditLog}',[AuditLogController::class,'show'])->name('audit-logs.show');
 
 
 });

@@ -97,4 +97,16 @@ class AuditLogController extends Controller
             compact('logs', 'totalLogs', 'todayLogs', 'leadLogs', 'userLogs')
         );
     }
+    public function show(AuditLog $auditLog)
+    {
+        abort_unless(
+            $auditLog->tenant_id == auth()->user()->tenant_id,
+            403
+        );
+
+        return response()->json([
+            'old_values' => $auditLog->old_values,
+            'new_values' => $auditLog->new_values,
+        ]);
+    }
 }

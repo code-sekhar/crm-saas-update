@@ -283,6 +283,9 @@
                                 Date
 
                             </th>
+                            <th class="px-5 py-3 text-center">
+                                Details
+                            </th>
 
                         </tr>
 
@@ -381,6 +384,17 @@
                                 {{ $log->created_at->format('d M Y h:i A') }}
 
                             </td>
+                            <td class="px-5 py-4 text-center">
+
+                                <button
+                                    onclick="openAuditModal({{ $log->id }})"
+                                    class="text-blue-600 hover:text-blue-800 font-semibold">
+
+                                    View
+
+                                </button>
+
+                            </td>
 
                         </tr>
 
@@ -413,5 +427,144 @@
         </div>
 
     </div>
+    <div id="auditModal"
+     class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
 
+        <div class="bg-white rounded-xl shadow-xl w-11/12 max-w-5xl">
+
+            <div class="flex justify-between items-center border-b p-5">
+
+                <h2 class="text-xl font-bold">
+
+                    Audit Details
+
+                </h2>
+
+                <button
+                    onclick="closeAuditModal()"
+                    class="text-gray-500 text-2xl">
+
+                    &times;
+
+                </button>
+
+            </div>
+
+            <div id="auditContent"
+                class="p-6 overflow-auto max-h-[70vh]">
+
+            </div>
+
+        </div>
+
+    </div>
+<script>
+
+function openAuditModal(id){
+
+    fetch('/audit-logs/'+id)
+
+    .then(res=>res.json())
+
+    .then(data=>{
+
+        let html='';
+
+        html+=`
+        <div class="grid grid-cols-2 gap-8">
+
+            <div>
+
+                <h3 class="font-bold mb-3">
+
+                    Old Values
+
+                </h3>
+
+                ${renderTable(data.old_values)}
+
+            </div>
+
+            <div>
+
+                <h3 class="font-bold mb-3">
+
+                    New Values
+
+                </h3>
+
+                ${renderTable(data.new_values)}
+
+            </div>
+
+        </div>
+        `;
+
+        document
+            .getElementById('auditContent')
+            .innerHTML=html;
+
+        document
+            .getElementById('auditModal')
+            .classList.remove('hidden');
+
+        document
+            .getElementById('auditModal')
+            .classList.add('flex');
+
+    });
+
+}
+
+function renderTable(obj){
+
+    if(!obj){
+
+        return '<p class="text-gray-500">No Data</p>';
+
+    }
+
+    let html='<table class="w-full border">';
+
+    for(let key in obj){
+
+        html+=`
+        <tr>
+
+            <td class="border p-2 font-semibold">
+
+                ${key}
+
+            </td>
+
+            <td class="border p-2">
+
+                ${obj[key]}
+
+            </td>
+
+        </tr>
+        `;
+
+    }
+
+    html+='</table>';
+
+    return html;
+
+}
+
+function closeAuditModal(){
+
+    document
+        .getElementById('auditModal')
+        .classList.add('hidden');
+
+    document
+        .getElementById('auditModal')
+        .classList.remove('flex');
+
+}
+
+</script>
 </x-app-layout>
