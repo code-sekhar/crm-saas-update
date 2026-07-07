@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
+use App\Services\AuditLogService;
 class UserController extends Controller
 {
     public function index(Request $request)
@@ -93,8 +94,16 @@ class UserController extends Controller
             'last_login_at'  => null,
 
         ]);
+        AuditLogService::log(
+            module: 'User',
+            action: 'Created',
+            recordId: $user->id,
+            description: 'Created User '.$user->name,
+            newValues: $user->toArray()
+        );
 
         $user->assignRole($request->role);
+
 
         return redirect()
             ->route('users.index')
@@ -156,6 +165,13 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
 
         }
+        AuditLogService::log(
+            module: 'User',
+            action: 'Updated',
+            recordId: $user->id,
+            description: 'Updated User '.$user->name,
+            newValues: $user->toArray()
+        );
 
         $user->save();
 
@@ -180,6 +196,14 @@ class UserController extends Controller
             );
 
         }
+
+        AuditLogService::log(
+            module: 'User',
+            action: 'Deleted',
+            recordId: $user->id,
+            description: 'Deleted User '.$user->name,
+            oldValues: $user->toArray()
+        );
 
         $user->delete();
 
