@@ -104,9 +104,30 @@ class AuditLogController extends Controller
             403
         );
 
+        // return response()->json([
+        //     'old_values' => $auditLog->old_values,
+        //     'new_values' => $auditLog->new_values,
+        // ]);
         return response()->json([
+
+            'module' => $auditLog->module,
+
+            'action' => $auditLog->action,
+
+            'description' => $auditLog->description,
+
+            'user' => $auditLog->user?->name,
+
+            'date' => $auditLog->created_at
+                ->format('d M Y h:i A'),
+
             'old_values' => $auditLog->old_values,
+
             'new_values' => $auditLog->new_values,
+            'browser' => $auditLog->browser,
+            'platform' => $auditLog->platform,
+            'ip' => $auditLog->ip_address,
+
         ]);
     }
 }

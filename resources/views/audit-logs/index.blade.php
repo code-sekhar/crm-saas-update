@@ -357,7 +357,9 @@
 
                             <td class="px-5 py-4">
 
+
                                 {{ $log->description }}
+
 
                             </td>
 
@@ -459,7 +461,15 @@
 
     </div>
 <script>
-
+const hiddenFields = [
+    'id',
+    'tenant_id',
+    'user_id',
+    'created_at',
+    'updated_at',
+    'deleted_at',
+    'remember_token'
+];
 function openAuditModal(id){
 
     fetch('/audit-logs/'+id)
@@ -468,41 +478,46 @@ function openAuditModal(id){
 
     .then(data=>{
 
-        let html='';
+        let html = `
 
-        html+=`
-        <div class="grid grid-cols-2 gap-8">
+        <div>
 
-            <div>
+            <div class="flex items-center gap-3 mb-3">
 
-                <h3 class="font-bold mb-3">
+                <span class="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold">
 
-                    Old Values
+                    ${data.module}
 
-                </h3>
+                </span>
 
-                ${renderTable(data.old_values)}
+                <span class="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold">
 
-            </div>
+                    ${data.action}
 
-            <div>
-
-                <h3 class="font-bold mb-3">
-
-                    New Values
-
-                </h3>
-
-                ${renderTable(data.new_values)}
+                </span>
 
             </div>
+
+
+
+            <p class="text-gray-500 mb-6">
+
+                ${data.description}
+
+            </p>
+
+            ${renderCompareTable(
+                data.old_values,
+                data.new_values
+            )}
 
         </div>
+
         `;
 
         document
             .getElementById('auditContent')
-            .innerHTML=html;
+            .innerHTML = html;
 
         document
             .getElementById('auditModal')
@@ -515,44 +530,100 @@ function openAuditModal(id){
     });
 
 }
+function renderCompareTable(oldData = {}, newData = {}) {
 
-function renderTable(obj){
+    let html = `
+        <table class="w-full border border-gray-200">
 
-    if(!obj){
+            <thead class="bg-gray-100">
 
-        return '<p class="text-gray-500">No Data</p>';
+                <tr>
 
-    }
+                    <th class="p-3 text-left">
 
-    let html='<table class="w-full border">';
+                        Field
 
-    for(let key in obj){
+                    </th>
 
-        html+=`
-        <tr>
+                    <th class="p-3 text-left">
 
-            <td class="border p-2 font-semibold">
+                        Old Value
 
-                ${key}
+                    </th>
 
-            </td>
+                    <th class="p-3 text-left">
 
-            <td class="border p-2">
+                        New Value
 
-                ${obj[key]}
+                    </th>
 
-            </td>
+                </tr>
 
-        </tr>
+            </thead>
+
+            <tbody>
+    `;
+
+    let keys = new Set([
+
+        ...Object.keys(oldData || {}),
+
+        ...Object.keys(newData || {})
+
+    ]);
+
+    keys.forEach(key=>{
+
+        if(hiddenFields.includes(key))
+            return;
+
+        let oldValue = oldData?.[key] ?? '-';
+
+        let newValue = newData?.[key] ?? '-';
+
+        if(oldValue == newValue)
+            return;
+
+        html += `
+
+            <tr>
+
+                <td class="border p-2 font-semibold">
+
+                    ${formatField(key)}
+
+                </td>
+
+                <td class="border p-2 bg-red-50">
+
+                    ${oldValue}
+
+                </td>
+
+                <td class="border p-2 bg-green-50 font-semibold">
+
+                    ${newValue}
+
+                </td>
+
+            </tr>
+
         `;
 
-    }
+    });
 
-    html+='</table>';
+    html += `
+
+            </tbody>
+
+        </table>
+
+    `;
 
     return html;
 
 }
+
 
 function closeAuditModal(){
 
@@ -563,6 +634,14 @@ function closeAuditModal(){
     document
         .getElementById('auditModal')
         .classList.remove('flex');
+
+}
+
+function formatField(field){
+
+    return field
+        .replaceAll('_',' ')
+        .replace(/\b\w/g,c=>c.toUpperCase());
 
 }
 
