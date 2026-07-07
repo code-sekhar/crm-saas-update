@@ -6,6 +6,7 @@ use App\Models\FollowUp;
 use Illuminate\Http\Request;
 use App\Models\Activity;
 use App\Models\Lead;
+use App\Services\AuditLogService;
 
 class FollowUpController extends Controller
 {
@@ -79,6 +80,13 @@ class FollowUpController extends Controller
             'description' => 'Follow-up scheduled for ' . $followUps->follow_up_date,
             'action'      => 'followup_added',
         ]);
+        AuditLogService::log(
+            module: 'Follow Up',
+            action: 'Created',
+            recordId: $followUps->id,
+            description: 'Created Follow Up for Lead ' . $followUps->lead->name,
+            newValues: $followUps->toArray()
+        );
 
         return redirect()
             ->route('leads.show', $request->lead_id)
@@ -102,6 +110,13 @@ class FollowUpController extends Controller
             'action'      => 'followup_completed',
             'description' => 'Follow-up marked as completed.',
         ]);
+        AuditLogService::log(
+            module: 'Follow Up',
+            action: 'Completed',
+            recordId: $followUp->id,
+            description: 'Marked Follow Up as Completed for Lead ' . $followUp->lead->name,
+            newValues: $followUp->toArray()
+        );
 
         return back()->with(
             'success',
@@ -163,6 +178,21 @@ class FollowUpController extends Controller
             'status' => $request->status,
 
         ]);
+        Activity::create([
+            'tenant_id'   => auth()->user()->tenant_id,
+            'lead_id'     => $followUp->lead_id,
+            'user_id'     => auth()->id(),
+            'action'      => 'followup_updated',
+            'description' => 'Follow-up updated.',
+        ]);
+
+        AuditLogService::log(
+            module: 'Follow Up',
+            action: 'Updated',
+            recordId: $followUp->id,
+            description: 'Updated Follow Up for Lead ' . $followUp->lead->name,
+            newValues: $followUp->toArray()
+        );
 
         return redirect()
             ->route('follow-ups.index')
@@ -177,6 +207,14 @@ class FollowUpController extends Controller
         abort_if(
             $followUp->tenant_id != auth()->user()->tenant_id,
             403
+        );
+
+        AuditLogService::log(
+            module: 'Follow Up',
+            action: 'Deleted',
+            recordId: $followUp->id,
+            description: 'Deleted Follow Up for Lead ' . $followUp->lead->name,
+            oldValues: $followUp->toArray()
         );
 
         Activity::create([

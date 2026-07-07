@@ -126,6 +126,13 @@ class TaskController extends Controller
             'action'     => 'Task Updated',
             'description'=> 'Task updated.',
         ]);
+        AuditLogService::log(
+                module: 'Task',
+                action: 'Updated',
+                recordId: $task->id,
+                description: 'Updated Task '.$task->title,
+                newValues: $task->toArray()
+            );
 
         return redirect()
             ->route('tasks.index')
@@ -148,6 +155,13 @@ class TaskController extends Controller
             'action'     => 'Task Deleted',
             'description'=> 'Task deleted.',
         ]);
+        AuditLogService::log(
+                module: 'Task',
+                action: 'Deleted',
+                recordId: $task->id,
+                description: 'Deleted Task '.$task->title,
+                oldValues: $task->toArray()
+            );
 
         $task->delete();
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\CompanySetting;
 use Illuminate\Support\Facades\Storage;
+use App\Services\AuditLogService;
 
 class CompanySettingController extends Controller
 {
@@ -87,6 +88,13 @@ class CompanySettingController extends Controller
         $setting->timezone = $request->timezone;
 
         $setting->address = $request->address;
+        AuditLogService::log(
+            module: 'Company Setting',
+            action: 'Updated',
+            recordId: $setting->id,
+            description: 'Updated Company Settings',
+            newValues: $setting->toArray()
+        );
 
         $setting->save();
 

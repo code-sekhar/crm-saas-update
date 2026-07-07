@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\LeadsExport;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\AuditLogService;
 
 class ReportController extends Controller
 {
@@ -260,6 +261,13 @@ class ReportController extends Controller
     // }
     public function exportExcel(Request $request)
     {
+        AuditLogService::log(
+            module: 'Report',
+            action: 'Exported Excel',
+            recordId: null,
+            description: 'Exported report as Excel.',
+            newValues: $request->all()
+        );
        //dd($request->all());
         return Excel::download(
             new LeadsExport($request->all()),
@@ -287,6 +295,13 @@ class ReportController extends Controller
         $report['sourceChartImage'] = $request->source_chart;
         $report['monthlyChartImage'] = $request->monthly_chart;
         $report['revenueChartImage'] = $request->revenue_chart;
+        AuditLogService::log(
+            module: 'Report',
+            action: 'Exported PDF',
+            recordId: null,
+            description: 'Exported report as PDF.',
+            newValues: $report
+        );
 
         // Generate PDF
         $pdf = Pdf::loadView('reports.pdf', $report)
